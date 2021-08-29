@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D myBody;
     private SpriteRenderer spriteRenderer;
     private Animator anim;
+    private Joystick joystick;
 
     private string WALK_ANIMATION = "Walk";
 
@@ -24,6 +25,7 @@ public class Player : MonoBehaviour
         myBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        joystick = GameObject.FindWithTag("Joystick").GetComponent<FixedJoystick>();
     }
 
     void Start()
@@ -45,7 +47,7 @@ public class Player : MonoBehaviour
 
     void PlayerMoveKeyboard()
     {
-        movementX = Input.GetAxisRaw("Horizontal");
+        movementX = Input.GetAxisRaw("Horizontal") + joystick.Horizontal;
         Vector3 movementVector = new Vector3(movementX, 0f, 0f);
         transform.position += movementVector * Time.deltaTime * moveForce;
     }
@@ -70,7 +72,13 @@ public class Player : MonoBehaviour
 
     void PlayerJump()
     {
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump"))
+            Jump();
+    }
+
+    public void Jump() 
+    {
+        if (isGrounded)
         {
             isGrounded = false;
             myBody.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
